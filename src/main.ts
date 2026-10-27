@@ -1,6 +1,8 @@
 import path from 'node:path';
 import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
+import os from 'node:os';
+import { use } from 'react';
 
 if(started){
     app.quit();
@@ -9,8 +11,21 @@ if(started){
 
 // the API
 
-ipcMain.handle('api-from-main', ()=> {
+console.log('ipc', ipcMain);
+
+ipcMain.handle('api-from-main', (event, arg1) => {
+    console.log('arg1', arg1);
     return 'api from main returning a string';
+});
+
+
+ipcMain.handle('getMemoryFromMain', () => {
+
+    const totalMemory = os.totalmem();
+    const freeMemory = os.freemem();
+    const usedMemory = totalMemory - freeMemory;
+
+    return {totalMemory, freeMemory, usedMemory}
 })
 
 
@@ -26,7 +41,7 @@ ipcMain.handle('api-from-main', ()=> {
 
 console.log('============================');
 
-console.log('BrowserWindow', BrowserWindow);
+// console.log('BrowserWindow', BrowserWindow);
 // Menu.setApplicationMenu(null);
 
 const rootPath = app.getAppPath();
